@@ -23,6 +23,7 @@ class Coffee(QMainWindow):
         title = ["ID", "название сорта", "степень обжарки", "молотый/в зернах", "описание вкуса", "цена",
                  "объем упаковки"]
         self.tableWidget.setColumnCount(len(title))
+
         self.tableWidget.setHorizontalHeaderLabels(title)
         self.tableWidget.setRowCount(0)
         for i, row in enumerate(result):
@@ -31,6 +32,8 @@ class Coffee(QMainWindow):
             for j, elem in enumerate(row):
                 self.tableWidget.setItem(
                     i, j, QTableWidgetItem(str(elem)))
+        for i in range(len(title)):
+            self.tableWidget.resizeColumnToContents(i)
 
     def create_coffee(self):
         self.opp = 'create'
@@ -90,13 +93,15 @@ class Coffee(QMainWindow):
 
         print(self.opp)
 
-        # print(self.id, sort, roast, BOG, taste, price, size)
+        print(self.id, sort, roast, BOG, taste, price, size)
 
-        # cur = self.con.cursor()
+        cur = self.con.cursor()
 
         print("I'm before!")
         if self.opp == 'create':
-            print("I'm if!")
+            cur.execute(f"""
+            INSERT INTO info VALUES ({self.id}, '{sort}', {roast}, {BOG}, '{taste}', {price}, {size})
+            """)
         else:
             print("I'm else!")
             result = cur.execute(f"""SELECT * FROM info WHERE id = {self.id}""").fetchone()
@@ -115,9 +120,10 @@ class Coffee(QMainWindow):
             # taste='asd', price=1, size=1
             # WHERE id = 0
             # """)
-        con.commit()
+        self.con.commit()
 
-        # self.show_info()
+        self.show_info()
+        self.AECF.hide()
 
 
 # con = sqlite3.connect("coffee.sqlite")
